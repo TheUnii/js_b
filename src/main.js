@@ -1,8 +1,12 @@
 import express from "express"
+import {logger, adminAuthorization, rateLimit} from "./middleware/middleware.js"
+
 
 const app = express()
 
 app.use(express.json())
+app.use(logger)
+app.use(rateLimit)
 
 class Product {
     constructor(id, name, price) {
@@ -173,6 +177,15 @@ app.delete("/orders/:id", (req, res) => {
 })
 
 
+app.post("/echo", (req, res) => {
+    res.json(req.body)
+})
+
+app.get("/admin", adminAuthorization, (req, res) => {
+    res.json({
+        message: "админ"
+    })
+})
 
 app.listen(3000, () => {
     console.log("Сервер запущен: http://localhost:3000")
