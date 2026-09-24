@@ -1,5 +1,6 @@
 import express from "express"
 import {logger, adminAuthorization, rateLimit} from "./middleware/middleware.js"
+import {isValPassword, valUser, valProduct, valOrder} from "./utils/validators.js"
 
 
 const app = express()
@@ -20,7 +21,7 @@ class User {
     constructor(id, name, email) {
         this.id = id
         this.name = name
-        this.email = email
+        this.email = email          
     }
 }
 
@@ -55,6 +56,13 @@ app.get("/products/:id", (req, res) => {
 })
 
 app.post("/products", (req, res) => {
+    const error = valProduct(req.body)
+    if (error) {
+        return res.status(404).json({
+            message: error
+        })
+    }
+
     const product = new Product(
         products.length + 1,
         req.body.name,
@@ -99,6 +107,13 @@ app.get("/users/:id", (req, res) => {
 })
 
 app.post("/users", (req, res) => {
+    const error = valUser(req.body)
+    if (error) {
+        return res.status(404).json({
+            message: error
+        })
+    }
+
     const user = new User(
         users.length + 1,
         req.body.name,
@@ -144,6 +159,13 @@ app.get("/orders/:id", (req, res) => {
 })
 
 app.post("/orders", (req, res) => {
+    const error = valOrder(req.body)
+    if (error) {
+        return res.status(404).json({
+            message: error
+        })
+    }
+
     const order = new Order(
         orders.length + 1,
         req.body.userId,
